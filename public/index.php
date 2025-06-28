@@ -1,4 +1,11 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+// El resto de tu código de index.php sigue aquí...
+require __DIR__.'/../vendor/autoload.php';
+$app = require_once __DIR__.'/../bootstrap/app.php';
 
 use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
