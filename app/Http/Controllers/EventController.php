@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event;
+use App\Models\User;
+use App\Models\Ticket;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -12,7 +14,28 @@ class EventController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth')->except(['index', 'show']);
+        $this->middleware('auth')->except(['index', 'show', 'home']);
+    }
+
+    /**
+     * Display the home page with statistics and featured events.
+     */
+    public function home()
+    {
+        // Estadísticas para la página de inicio
+        $totalUsers = User::count();
+        $totalEvents = Event::count();
+        $totalTickets = Ticket::count();
+        
+        // Eventos destacados (los más recientes y activos)
+        $events = Event::with('user')
+            ->active()
+            ->upcoming()
+            ->latest('event_date')
+            ->take(6)
+            ->get();
+        
+        return view('welcome', compact('events', 'totalUsers', 'totalEvents', 'totalTickets'));
     }
 
     /**
@@ -20,13 +43,29 @@ class EventController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Event::with('user')->latest();
+        $query = Event::with('user')->active()->upcoming();
         
         if ($request->category) {
             $query->where('category', $request->category);
         }
+
+        if ($request->search) {
+            $query->where(function($q) use ($request) {
+                $q->where('title', 'like', '%' . $request->search . '%')
+                  ->orWhere('description', 'like', '%' . $request->search . '%')
+                  ->orWhere('location', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        if ($request->price_min) {
+            $query->where('price', '>=', $request->price_min);
+        }
+
+        if ($request->price_max) {
+            $query->where('price', '<=', $request->price_max);
+        }
         
-        $events = $query->paginate(12);
+        $events = $query->latest('event_date')->paginate(12);
         $categories = Event::categories();
         
         return view('events.index', compact('events', 'categories'));
@@ -63,7 +102,7 @@ class EventController extends Controller
             'category' => 'required|in:' . implode(',', array_keys(Event::categories())),
             'description' => 'required',
             'location' => 'required',
-            'event_date' => 'required|date',
+            'event_date' => 'required|date|after:now',
             'price' => 'required|numeric|min:0',
             'capacity' => 'nullable|integer|min:1',
             'image' => 'required|image|max:2048'
@@ -75,6 +114,7 @@ class EventController extends Controller
         }
 
         $validated['user_id'] = Auth::id();
+        $validated['status'] = 'active';
         
         $event = Event::create($validated);
 
@@ -87,7 +127,18 @@ class EventController extends Controller
      */
     public function show(Event $event)
     {
-        return view('events.show', compact('event'));
+        $event->load('user');
+        
+        // Verificar si el usuario ya tiene tickets para este evento
+        $userTicket = null;
+        if (Auth::check()) {
+            $userTicket = Auth::user()->tickets()
+                ->where('event_id', $event->id)
+                ->whereIn('status', ['pending', 'confirmed'])
+                ->first();
+        }
+
+        return view('events.show', compact('event', 'userTicket'));
     }
 
     /**
@@ -96,7 +147,8 @@ class EventController extends Controller
     public function edit(Event $event)
     {
         $this->authorize('update', $event);
-        return view('events.edit', compact('event'));
+        $categories = Event::categories();
+        return view('events.edit', compact('event', 'categories'));
     }
 
     /**
@@ -108,6 +160,7 @@ class EventController extends Controller
 
         $validated = $request->validate([
             'title' => 'required|max:255',
+            'category' => 'required|in:' . implode(',', array_keys(Event::categories())),
             'description' => 'required',
             'location' => 'required',
             'event_date' => 'required|date',

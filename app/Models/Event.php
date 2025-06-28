@@ -48,11 +48,81 @@ class Event extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function tickets()
+    {
+        return $this->hasMany(Ticket::class);
+    }
+
     public function getImageUrlAttribute()
     {
         if ($this->image_path) {
             return asset('storage/' . $this->image_path);
         }
         return null;
+    }
+
+    public function getAvailableCapacityAttribute()
+    {
+        if (!$this->capacity) {
+            return null; // Sin límite de capacidad
+        }
+        
+        $soldTickets = $this->tickets()
+            ->whereIn('status', ['pending', 'confirmed'])
+            ->sum('quantity');
+            
+        return max(0, $this->capacity - $soldTickets);
+    }
+
+    public function isSoldOut()
+    {
+        if (!$this->capacity) {
+            return false;
+        }
+        
+        return $this->available_capacity <= 0;
+    }
+
+    public function canPurchase($quantity = 1)
+    {
+        if ($this->isSoldOut()) {
+            return false;
+        }
+        
+        if (!$this->capacity) {
+            return true;
+        }
+        
+        return $this->available_capacity >= $quantity;
+    }
+
+    public function getFormattedDateAttribute()
+    {
+        return $this->event_date->format('d/m/Y H:i');
+    }
+
+    public function getDateAttribute()
+    {
+        return $this->event_date;
+    }
+
+    public function getFormattedPriceAttribute()
+    {
+        return 'S/. ' . number_format($this->price, 2);
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->where('status', 'active');
+    }
+
+    public function scopeUpcoming($query)
+    {
+        return $query->where('event_date', '>', now());
+    }
+
+    public function scopePast($query)
+    {
+        return $query->where('event_date', '<', now());
     }
 }

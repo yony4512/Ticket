@@ -53,6 +53,20 @@
         </div>
     </nav>
 
+    <header class="flex justify-between items-center py-4 px-8 bg-white shadow">
+        <div>
+            <!-- Logo o nombre del sistema -->
+        </div>
+        <div class="flex gap-4">
+            <a href="{{ route('about') }}" class="inline-flex items-center px-4 py-2 bg-blue-100 hover:bg-blue-200 text-blue-800 font-semibold rounded-lg shadow transition">
+                <i class="fas fa-info-circle mr-2"></i> Sobre Nosotros
+            </a>
+            <a href="{{ route('reclamaciones') }}" class="inline-flex items-center px-4 py-2 bg-red-100 hover:bg-red-200 text-red-800 font-semibold rounded-lg shadow transition">
+                <i class="fas fa-book mr-2"></i> Libro de Reclamaciones
+            </a>
+        </div>
+    </header>
+
     <main class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             @if (session('success'))

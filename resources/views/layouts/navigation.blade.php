@@ -15,16 +15,33 @@
                     <x-nav-link :href="route('home')" :active="request()->routeIs('home')">
                         {{ __('Inicio') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('about')" :active="request()->routeIs('about')">
-                        {{ __('Nosotros') }}
-                    </x-nav-link>
                     <x-nav-link :href="route('events.index')" :active="request()->routeIs('events.index')">
                         {{ __('Eventos') }}
                     </x-nav-link>
-                    @auth
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                        {{ __('Tus Publicaciones') }}
+                    <x-nav-link :href="route('about')" :active="request()->routeIs('about')">
+                        {{ __('Sobre Nosotros') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('reclamaciones')" :active="request()->routeIs('reclamaciones')">
+                        {{ __('Libro de Reclamaciones') }}
+                    </x-nav-link>
+                    @auth
+                        @if(Auth::user()->isAdmin())
+                            <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.*')" class="text-red-600 hover:text-red-800">
+                                <i class="fas fa-crown mr-1"></i>
+                                {{ __('Panel Admin') }}
+                            </x-nav-link>
+                        @endif
+                        <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+                            {{ __('Tus Publicaciones') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('tickets.index')" :active="request()->routeIs('tickets.*')">
+                            {{ __('Mis Entradas') }}
+                            @if(Auth::user()->active_tickets_count > 0)
+                                <span class="ml-1 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+                                    {{ Auth::user()->active_tickets_count }}
+                                </span>
+                            @endif
+                        </x-nav-link>
                     @endauth
                 </div>
             </div>
@@ -46,8 +63,18 @@
                     </x-slot>
 
                     <x-slot name="content">
+                        @if(Auth::user()->isAdmin())
+                            <x-dropdown-link :href="route('admin.dashboard')" class="text-red-600 hover:text-red-800">
+                                <i class="fas fa-crown mr-2"></i>
+                                {{ __('Panel Administración') }}
+                            </x-dropdown-link>
+                        @endif
                         <x-dropdown-link :href="route('profile.edit')">
                             {{ __('Perfil') }}
+                        </x-dropdown-link>
+
+                        <x-dropdown-link :href="route('tickets.index')">
+                            {{ __('Mis Entradas') }}
                         </x-dropdown-link>
 
                         <!-- Authentication -->
@@ -89,15 +116,32 @@
                 {{ __('Inicio') }}
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('about')" :active="request()->routeIs('about')">
-                {{ __('Nosotros') }}
+                {{ __('Sobre Nosotros') }}
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('events.index')" :active="request()->routeIs('events.index')">
                 {{ __('Eventos') }}
             </x-responsive-nav-link>
-            @auth
-            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                {{ __('Publicado') }}
+            <x-responsive-nav-link :href="route('reclamaciones')" :active="request()->routeIs('reclamaciones')">
+                {{ __('Libro de Reclamaciones') }}
             </x-responsive-nav-link>
+            @auth
+                @if(Auth::user()->isAdmin())
+                    <x-responsive-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.*')" class="text-red-600">
+                        <i class="fas fa-crown mr-2"></i>
+                        {{ __('Panel Admin') }}
+                    </x-responsive-nav-link>
+                @endif
+                <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+                    {{ __('Publicado') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('tickets.index')" :active="request()->routeIs('tickets.*')">
+                    {{ __('Mis Entradas') }}
+                    @if(Auth::user()->active_tickets_count > 0)
+                        <span class="ml-1 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+                            {{ Auth::user()->active_tickets_count }}
+                        </span>
+                    @endif
+                </x-responsive-nav-link>
             @endauth
         </div>
 
@@ -110,8 +154,18 @@
             </div>
 
             <div class="mt-3 space-y-1">
+                @if(Auth::user()->isAdmin())
+                    <x-responsive-nav-link :href="route('admin.dashboard')" class="text-red-600">
+                        <i class="fas fa-crown mr-2"></i>
+                        {{ __('Panel Administración') }}
+                    </x-responsive-nav-link>
+                @endif
                 <x-responsive-nav-link :href="route('profile.edit')">
                     {{ __('Perfil') }}
+                </x-responsive-nav-link>
+
+                <x-responsive-nav-link :href="route('tickets.index')">
+                    {{ __('Mis Entradas') }}
                 </x-responsive-nav-link>
 
                 <!-- Authentication -->
