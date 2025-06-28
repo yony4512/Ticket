@@ -19,6 +19,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+       // Añade este bloque
+        if (env('APP_ENV') === 'production') {
+            URL::forceScheme('https');
+        }
+        // Fin del bloque a añadir
     }
 }
