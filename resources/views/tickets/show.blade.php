@@ -33,7 +33,7 @@
                             </div>
                             <div>
                                 <p class="text-sm font-medium text-gray-500">{{ __('Categoría') }}</p>
-                                <p class="text-lg">{{ Event::categories()[$ticket->event->category] }}</p>
+                                <p class="text-lg">{{ \App\Models\Event::categories()[$ticket->event->category] }}</p>
                             </div>
                             <div>
                                 <p class="text-sm font-medium text-gray-500">{{ __('Organizador') }}</p>
@@ -101,7 +101,10 @@
                             <i class="fas fa-download mr-2"></i>
                             {{ __('Descargar Entrada') }}
                         </a>
-
+                        <button onclick="window.print()" class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 focus:bg-green-700 active:bg-green-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                            <i class="fas fa-print mr-2"></i>
+                            Imprimir
+                        </button>
                         @if($ticket->canBeCancelled())
                             <form action="{{ route('tickets.cancel', $ticket) }}" method="POST" class="inline">
                                 @csrf
@@ -112,11 +115,17 @@
                                 </button>
                             </form>
                         @endif
-
                         <a href="{{ route('tickets.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition ease-in-out duration-150">
                             <i class="fas fa-arrow-left mr-2"></i>
                             {{ __('Volver a Mis Entradas') }}
                         </a>
+                    </div>
+
+                    <!-- Mostrar QR -->
+                    <div class="mt-8 flex flex-col items-center">
+                        <h4 class="text-lg font-semibold text-gray-700 mb-2">Código QR de tu entrada</h4>
+                        {!! QrCode::size(180)->generate($ticket->ticket_code) !!}
+                        <p class="text-xs text-gray-500 mt-2">Escanea este código al ingresar al evento</p>
                     </div>
                 </div>
             </div>

@@ -1,0 +1,18 @@
+{
+    "The title field is required.": "El campo título es obligatorio.",
+    "The category field is required.": "El campo categoría es obligatorio.",
+    "The description field is required.": "El campo descripción es obligatorio.",
+    "The location field is required.": "El campo ubicación es obligatorio.",
+    "The event_date field is required.": "El campo fecha del evento es obligatorio.",
+    "The price field is required.": "El campo precio es obligatorio.",
+    "The image field is required.": "El campo imagen es obligatorio.",
+    "The event_date must be a valid date.": "La fecha del evento debe ser una fecha válida.",
+    "The event_date must be a date after now.": "La fecha del evento debe ser posterior a la fecha actual.",
+    "The price must be a number.": "El precio debe ser un número.",
+    "The price must be at least 0.": "El precio debe ser al menos 0.",
+    "The capacity must be an integer.": "La capacidad debe ser un número entero.",
+    "The capacity must be at least 1.": "La capacidad debe ser al menos 1.",
+    "The image must be an image.": "El archivo debe ser una imagen.",
+    "The image may not be greater than 2048 kilobytes.": "La imagen no puede ser mayor a 2MB."
+}
+

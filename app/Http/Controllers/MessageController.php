@@ -41,24 +41,46 @@ class MessageController extends Controller
 
     public function create()
     {
-        $users = User::where('id', '!=', Auth::id())->get();
-        return view('messages.create', compact('users'));
+        // Los usuarios solo pueden enviar mensajes al administrador
+        $admin = User::whereHas('roles', function($query) {
+            $query->where('name', 'admin');
+        })->first();
+        
+        return view('messages.create', compact('admin'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'to_user_id' => 'required|exists:users,id',
             'subject' => 'required|string|max:255',
-            'message' => 'required|string|max:1000'
+            'message' => 'required|string|max:1000',
+            'to_user_id' => 'nullable|exists:users,id'
         ]);
 
-        Message::create([
+        // Si no se especifica destinatario, enviar al administrador
+        $toUserId = $request->to_user_id;
+        if (!$toUserId) {
+            $admin = User::whereHas('roles', function($query) {
+                $query->where('name', 'admin');
+            })->first();
+            $toUserId = $admin->id;
+        }
+
+        $newMessage = Message::create([
             'from_user_id' => Auth::id(),
-            'to_user_id' => $request->to_user_id,
+            'to_user_id' => $toUserId,
             'subject' => $request->subject,
             'message' => $request->message
         ]);
+
+        // Cargar la relación fromUser para la notificación
+        $newMessage->load('fromUser');
+
+        // Crear notificación para el destinatario
+        $recipient = User::find($toUserId);
+        if ($recipient) {
+            $recipient->notifyNewMessage($newMessage);
+        }
 
         return redirect()->route('messages.index')
             ->with('success', 'Mensaje enviado exitosamente.');

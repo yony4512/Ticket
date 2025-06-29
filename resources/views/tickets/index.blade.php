@@ -1,27 +1,30 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Mis Entradas') }}
-        </h2>
+        {{-- Título eliminado --}}
     </x-slot>
 
-    <div class="py-12">
+    <div class="py-8">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+           
+
             @if(session('success'))
-                <div class="mb-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg">
-                    {{ session('success') }}
+                <div class="glass-effect rounded-xl p-4 shadow-lg border border-green-200 mb-6" role="alert">
+                    <div class="flex items-center">
+                        <i class="fas fa-check-circle text-green-600 mr-3"></i>
+                        <span class="text-green-800 font-medium">{{ session('success') }}</span>
+                    </div>
                 </div>
             @endif
 
             @if($tickets->isEmpty())
-                <div class="text-center py-12">
-                    <div class="w-24 h-24 bg-gradient-to-br from-gray-200 to-gray-300 rounded-full flex items-center justify-center mx-auto mb-6">
+                <div class="glass-effect rounded-xl p-8 shadow-lg border border-gray-200 text-center">
+                    <div class="w-20 h-20 bg-gradient-to-br from-gray-200 to-gray-300 rounded-full flex items-center justify-center mx-auto mb-6">
                         <i class="fas fa-ticket-alt text-gray-400 text-3xl"></i>
                     </div>
-                    <h3 class="text-2xl font-bold text-gray-900 mb-4">No tienes entradas aún</h3>
-                    <p class="text-gray-600 mb-8">Explora eventos y compra tus primeras entradas para comenzar.</p>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-2">No tienes entradas aún</h3>
+                    <p class="text-gray-600 mb-6">Explora eventos y compra tus primeras entradas para comenzar.</p>
                     <a href="{{ route('events.index') }}" 
-                       class="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300">
+                       class="inline-flex items-center px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300">
                         <i class="fas fa-search mr-2"></i>
                         Explorar Eventos
                     </a>
@@ -29,7 +32,7 @@
             @else
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     @foreach($tickets as $ticket)
-                        <div class="glass-effect rounded-xl overflow-hidden shadow-lg border border-gray-200 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
+                        <div class="glass-effect rounded-xl overflow-hidden shadow-lg border border-gray-200 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
                             @if($ticket->event->image_path)
                                 <img src="{{ $ticket->event->image_url }}" alt="{{ $ticket->event->title }}" class="w-full h-48 object-cover">
                             @else
@@ -50,7 +53,7 @@
                                 <p class="text-gray-600 mb-4">{{ $ticket->event->formatted_date }}</p>
                                 
                                 <div class="flex items-center text-sm text-gray-500 mb-4">
-                                    <i class="fas fa-map-marker-alt mr-2"></i>
+                                    <i class="fas fa-map-marker-alt mr-2 text-blue-500"></i>
                                     <span>{{ $ticket->event->location }}</span>
                                 </div>
                                 

@@ -138,4 +138,52 @@ class User extends Authenticatable
             $this->roles()->detach($role);
         }
     }
+
+    // Métodos para crear notificaciones
+    public function createNotification($type, $title, $message, $data = [])
+    {
+        return $this->notifications()->create([
+            'type' => $type,
+            'title' => $title,
+            'message' => $message,
+            'data' => $data,
+            'read_at' => null
+        ]);
+    }
+
+    public function notifyNewMessage($message)
+    {
+        $senderName = $message->fromUser->name;
+        $subject = $message->subject;
+        
+        return $this->createNotification(
+            'new_message',
+            'Nuevo mensaje recibido',
+            "Has recibido un nuevo mensaje de {$senderName}: {$subject}",
+            [
+                'message_id' => $message->id,
+                'sender_id' => $message->from_user_id,
+                'sender_name' => $senderName,
+                'subject' => $subject
+            ]
+        );
+    }
+
+    public function notifyMessageReply($message)
+    {
+        $senderName = $message->fromUser->name;
+        $subject = $message->subject;
+        
+        return $this->createNotification(
+            'message_reply',
+            'Respuesta recibida',
+            "Has recibido una respuesta de {$senderName}: {$subject}",
+            [
+                'message_id' => $message->id,
+                'sender_id' => $message->from_user_id,
+                'sender_name' => $senderName,
+                'subject' => $subject
+            ]
+        );
+    }
 }

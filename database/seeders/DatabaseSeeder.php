@@ -117,8 +117,8 @@ class DatabaseSeeder extends Seeder
                 \App\Models\Message::create([
                     'from_user_id' => $testUser->id,
                     'to_user_id' => $user->id,
-                    'subject' => 'Bienvenido a nuestro sistema de eventos',
-                    'message' => 'Hola ' . $user->name . ', te damos la bienvenida a nuestro sistema de gestión de eventos. Esperamos que disfrutes de todas las funcionalidades disponibles.',
+                    'subject' => 'Bienvenido a Wasi Tickets',
+                    'message' => 'Hola ' . $user->name . ', te damos la bienvenida a Wasi Tickets. Esperamos que disfrutes de todas las funcionalidades disponibles.',
                     'status' => fake()->randomElement(['unread', 'read']),
                     'created_at' => fake()->dateTimeBetween('-1 week', 'now'),
                 ]);

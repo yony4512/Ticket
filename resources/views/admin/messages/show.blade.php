@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
 @section('title', 'Ver Mensaje')
-@section('subtitle', '<p class="text-sm text-gray-600">Detalle del mensaje recibido</p>')
+
 
 @section('content')
 <div class="space-y-6">

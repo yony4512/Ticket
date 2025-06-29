@@ -1,9 +1,5 @@
 <x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Inicio') }}
-        </h2>
-    </x-slot>
+    
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -26,11 +22,13 @@
                             Explorar Eventos
                         </a>
                         @auth
-                            <a href="{{ route('events.create') }}" 
-                               class="group inline-flex items-center px-8 py-4 bg-yellow-400 text-gray-900 font-bold rounded-xl shadow-2xl hover:shadow-3xl transform hover:-translate-y-2 transition-all duration-300">
-                                <i class="fas fa-plus mr-3 text-xl group-hover:scale-110 transition-transform"></i>
-                                Crear Evento
-                            </a>
+                            @if(!Auth::user()->hasRole('admin'))
+                                <a href="{{ route('events.create') }}" 
+                                   class="group inline-flex items-center px-8 py-4 bg-yellow-400 text-gray-900 font-bold rounded-xl shadow-2xl hover:shadow-3xl transform hover:-translate-y-2 transition-all duration-300">
+                                    <i class="fas fa-plus mr-3 text-xl group-hover:scale-110 transition-transform"></i>
+                                    Crear Evento
+                                </a>
+                            @endif
                         @else
                             <a href="{{ route('register') }}" 
                                class="group inline-flex items-center px-8 py-4 bg-green-500 text-white font-bold rounded-xl shadow-2xl hover:shadow-3xl transform hover:-translate-y-2 transition-all duration-300">
@@ -357,11 +355,19 @@
                         Únete a miles de organizadores que confían en nuestra plataforma para crear experiencias inolvidables
                     </p>
                     @auth
-                        <a href="{{ route('events.create') }}" 
-                           class="group inline-flex items-center px-10 py-5 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-bold text-lg rounded-xl shadow-2xl hover:shadow-3xl transform hover:-translate-y-2 transition-all duration-300">
-                            <i class="fas fa-rocket mr-3 text-xl group-hover:rotate-12 transition-transform"></i>
-                            Crear mi primer evento
-                        </a>
+                        @if(!Auth::user()->hasRole('admin'))
+                            <a href="{{ route('events.create') }}" 
+                               class="group inline-flex items-center px-10 py-5 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-bold text-lg rounded-xl shadow-2xl hover:shadow-3xl transform hover:-translate-y-2 transition-all duration-300">
+                                <i class="fas fa-rocket mr-3 text-xl group-hover:rotate-12 transition-transform"></i>
+                                Crear mi primer evento
+                            </a>
+                        @else
+                            <a href="{{ route('events.index') }}" 
+                               class="group inline-flex items-center px-10 py-5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold text-lg rounded-xl shadow-2xl hover:shadow-3xl transform hover:-translate-y-2 transition-all duration-300">
+                                <i class="fas fa-search mr-3 text-xl group-hover:rotate-12 transition-transform"></i>
+                                Explorar Eventos
+                            </a>
+                        @endif
                     @else
                         <div class="flex flex-col sm:flex-row gap-6 justify-center">
                             <a href="{{ route('register') }}" 

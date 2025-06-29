@@ -34,7 +34,7 @@
                             </div>
                             <div>
                                 <h4 class="font-bold text-gray-900 mb-1">Empresa</h4>
-                                <p class="text-gray-600">Sistema de Gestión de Eventos S.A.C.</p>
+                                <p class="text-gray-600">Wasi Tickets</p>
                                 <p class="text-gray-600">RUC: 20123456789</p>
                             </div>
                         </div>

@@ -19,12 +19,14 @@ class Event extends Model
         'price',
         'capacity',
         'status',
-        'user_id'
+        'user_id',
+        'edited_once'
     ];
 
     protected $casts = [
         'event_date' => 'datetime',
-        'price' => 'decimal:2'
+        'price' => 'decimal:2',
+        'edited_once' => 'boolean'
     ];
 
     public static function categories()
@@ -36,10 +38,16 @@ class Event extends Model
             'gastronomia' => 'Gastronomía',
             'educacion' => 'Educación y Talleres',
             'deportes' => 'Deportes y Aventura',
+            'deportivo' => 'Deportivo',
+            'concierto' => 'Concierto',
+            'conferencia' => 'Conferencia',
+            'cultural' => 'Cultural',
+            'teatro' => 'Teatro',
             'nocturna' => 'Vida Nocturna y Entretenimiento',
             'social' => 'Social y Comunitario',
             'religioso' => 'Religioso y Espiritual',
-            'negocios' => 'Negocios y Tecnología'
+            'negocios' => 'Negocios y Tecnología',
+            'otros' => 'Otros'
         ];
     }
 
@@ -124,5 +132,21 @@ class Event extends Model
     public function scopePast($query)
     {
         return $query->where('event_date', '<', now());
+    }
+
+    public function canBeEdited()
+    {
+        return !$this->edited_once;
+    }
+
+    public function markAsEdited()
+    {
+        $this->update(['edited_once' => true]);
+    }
+
+    public function getCategoryLabelAttribute()
+    {
+        $categories = self::categories();
+        return $categories[$this->category] ?? $this->category;
     }
 }

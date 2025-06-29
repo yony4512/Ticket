@@ -102,30 +102,25 @@
             </div>
             <h2 class="text-xl lg:text-2xl font-bold text-gray-900">Acciones Rápidas</h2>
         </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
-            <a href="{{ route('admin.events.create') }}" 
-               class="flex items-center p-4 lg:p-6 bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
-                <i class="fas fa-plus mr-3 lg:mr-4 text-lg lg:text-2xl"></i>
-                <span class="font-semibold text-base lg:text-lg">Crear Evento</span>
-            </a>
-            
-            <a href="{{ route('admin.users.index') }}" 
-               class="flex items-center p-4 lg:p-6 bg-green-600 hover:bg-green-700 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
-                <i class="fas fa-user-plus mr-3 lg:mr-4 text-lg lg:text-2xl"></i>
-                <span class="font-semibold text-base lg:text-lg">Gestionar Usuarios</span>
-            </a>
-            
-            <a href="{{ route('admin.messages.index') }}" 
-               class="flex items-center p-4 lg:p-6 bg-purple-600 hover:bg-purple-700 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
-                <i class="fas fa-envelope mr-3 lg:mr-4 text-lg lg:text-2xl"></i>
-                <span class="font-semibold text-base lg:text-lg">Ver Mensajes</span>
-            </a>
-            
-            <a href="{{ route('admin.reports') }}" 
-               class="flex items-center p-4 lg:p-6 bg-orange-600 hover:bg-orange-700 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
-                <i class="fas fa-chart-bar mr-3 lg:mr-4 text-lg lg:text-2xl"></i>
-                <span class="font-semibold text-base lg:text-lg">Ver Reportes</span>
-            </a>
+        <div class="flex justify-center">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 w-full max-w-6xl">
+                <a href="{{ route('admin.users.index') }}" class="flex items-center p-4 lg:p-6 bg-green-600 hover:bg-green-700 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+                    <i class="fas fa-user-plus mr-3 lg:mr-4 text-lg lg:text-2xl"></i>
+                    <span class="font-semibold text-base lg:text-lg">Gestionar Usuarios</span>
+                </a>
+                <a href="{{ route('admin.messages.index') }}" class="flex items-center p-4 lg:p-6 bg-purple-600 hover:bg-purple-700 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+                    <i class="fas fa-envelope mr-3 lg:mr-4 text-lg lg:text-2xl"></i>
+                    <span class="font-semibold text-base lg:text-lg">Ver Mensajes</span>
+                </a>
+                <a href="{{ route('admin.reports') }}" class="flex items-center p-4 lg:p-6 bg-orange-600 hover:bg-orange-700 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+                    <i class="fas fa-chart-bar mr-3 lg:mr-4 text-lg lg:text-2xl"></i>
+                    <span class="font-semibold text-base lg:text-lg">Ver Reportes</span>
+                </a>
+                <a href="{{ route('admin.statistics') }}" class="flex items-center p-4 lg:p-6 bg-red-600 hover:bg-red-700 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+                    <i class="fas fa-chart-line mr-3 lg:mr-4 text-lg lg:text-2xl"></i>
+                    <span class="font-semibold text-base lg:text-lg">Estadísticas</span>
+                </a>
+            </div>
         </div>
     </div>
 

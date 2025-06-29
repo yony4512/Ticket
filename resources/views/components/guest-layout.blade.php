@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+        <title>{{ config('app.name', 'Wasi Tickets') }}</title>
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
@@ -23,9 +23,10 @@
                         <i class="fas fa-calendar-alt text-white text-2xl"></i>
                     </div>
                     <div>
-                        <h1 class="text-2xl font-bold bg-gradient-to-r from-gray-900 via-purple-800 to-indigo-900 bg-clip-text text-transparent">
-                            Sistema de Eventos
-                        </h1>
+                        <div class="flex items-center">
+                            <img src="{{ asset('imagenes/iconoboleto.png') }}" alt="Logo" class="h-8 w-auto mr-3">
+                            <span class="text-xl font-bold text-gray-900">Wasi Tickets</span>
+                        </div>
                     </div>
                 </a>
             </div>

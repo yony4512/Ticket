@@ -1,6 +1,7 @@
 @php
     use App\Models\Event;
     use Illuminate\Support\Str;
+    use SimpleSoftwareIO\QrCode\Facades\QrCode;
 @endphp
 <!DOCTYPE html>
 <html lang="es">
@@ -159,7 +160,7 @@
     <div class="ticket">
         <div class="header">
             <h1>🎫 Entrada de Evento</h1>
-            <p>Sistema de Gestión de Eventos - Cusco</p>
+            <p>Wasi Tickets - Cusco</p>
         </div>
 
         <div class="content">
@@ -181,7 +182,7 @@
                     </div>
                     <div class="info-item">
                         <i>🏷️</i>
-                        <span>{{ Event::categories()[$ticket->event->category] }}</span>
+                        <span>{{ \App\Models\Event::categories()[$ticket->event->category] }}</span>
                     </div>
                 </div>
 
@@ -230,11 +231,9 @@
             </div>
 
             <div class="qr-code">
-                <div style="width: 120px; height: 120px; margin: 0 auto; background: #f8f9fa; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center;">
-                    <span style="font-size: 24px;">📱</span>
-                </div>
-                <p>Código QR: {{ $ticket->ticket_code }}</p>
-                <p>Escanea para validar la entrada</p>
+                {!! QrCode::size(140)->generate($ticket->ticket_code) !!}
+                <p>{{ $ticket->ticket_code }}</p>
+                <p style="font-size:11px; color:#888;">Escanea este código para validar tu entrada</p>
             </div>
         </div>
 

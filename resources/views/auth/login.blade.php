@@ -107,7 +107,7 @@
         <!-- Footer -->
         <div class="text-center">
             <p class="text-sm text-gray-500">
-                Sistema de Gestión de Eventos
+                Wasi Tickets
             </p>
         </div>
     </div>

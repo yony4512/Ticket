@@ -17,13 +17,28 @@ class NotificationController extends Controller
         return view('notifications.index', compact('notifications'));
     }
 
+    public function getData(): JsonResponse
+    {
+        $notifications = auth()->user()->notifications()
+            ->latest()
+            ->take(10)
+            ->get();
+        
+        $unreadCount = auth()->user()->unreadNotifications()->count();
+        
+        return response()->json([
+            'notifications' => $notifications,
+            'unread_count' => $unreadCount
+        ]);
+    }
+
     public function markAsRead(Notification $notification)
     {
         if ($notification->user_id !== auth()->id()) {
             abort(403);
         }
 
-        $notification->markAsRead();
+        $notification->update(['read_at' => now()]);
 
         return response()->json(['success' => true]);
     }

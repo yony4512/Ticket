@@ -12,6 +12,12 @@
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                    @auth
+                        <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 px-6 py-2 rounded-lg shadow-lg font-semibold">
+                            <i class="fas fa-tachometer-alt mr-2"></i>
+                            {{ __('Dashboard') }}
+                        </x-nav-link>
+                    @endauth
                     <x-nav-link :href="route('home')" :active="request()->routeIs('home')">
                         {{ __('Inicio') }}
                     </x-nav-link>
@@ -31,8 +37,8 @@
                                 {{ __('Panel Admin') }}
                             </x-nav-link>
                         @endif
-                        <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                            {{ __('Tus Publicaciones') }}
+                        <x-nav-link :href="route('events.my-events')" :active="request()->routeIs('events.my-events')">
+                            {{ __('Mis Eventos') }}
                         </x-nav-link>
                         <x-nav-link :href="route('tickets.index')" :active="request()->routeIs('tickets.*')">
                             {{ __('Mis Entradas') }}
@@ -63,6 +69,10 @@
                     </x-slot>
 
                     <x-slot name="content">
+                        <x-dropdown-link :href="route('dashboard')" class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700">
+                            <i class="fas fa-tachometer-alt mr-2"></i>
+                            {{ __('Dashboard') }}
+                        </x-dropdown-link>
                         @if(Auth::user()->isAdmin())
                             <x-dropdown-link :href="route('admin.dashboard')" class="text-red-600 hover:text-red-800">
                                 <i class="fas fa-crown mr-2"></i>
@@ -70,11 +80,18 @@
                             </x-dropdown-link>
                         @endif
                         <x-dropdown-link :href="route('profile.edit')">
+                            <i class="fas fa-user-cog mr-2"></i>
                             {{ __('Perfil') }}
                         </x-dropdown-link>
 
                         <x-dropdown-link :href="route('tickets.index')">
+                            <i class="fas fa-ticket-alt mr-2"></i>
                             {{ __('Mis Entradas') }}
+                        </x-dropdown-link>
+
+                        <x-dropdown-link :href="route('events.my-events')">
+                            <i class="fas fa-calendar-alt mr-2"></i>
+                            {{ __('Mis Eventos') }}
                         </x-dropdown-link>
 
                         <!-- Authentication -->
@@ -84,6 +101,7 @@
                             <x-dropdown-link :href="route('logout')"
                                     onclick="event.preventDefault();
                                                 this.closest('form').submit();">
+                                <i class="fas fa-sign-out-alt mr-2"></i>
                                 {{ __('Cerrar Sesión') }}
                             </x-dropdown-link>
                         </form>
@@ -112,6 +130,12 @@
     <!-- Responsive Navigation Menu -->
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
+            @auth
+                <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold">
+                    <i class="fas fa-tachometer-alt mr-2"></i>
+                    {{ __('Dashboard') }}
+                </x-responsive-nav-link>
+            @endauth
             <x-responsive-nav-link :href="route('home')" :active="request()->routeIs('home')">
                 {{ __('Inicio') }}
             </x-responsive-nav-link>
@@ -131,8 +155,8 @@
                         {{ __('Panel Admin') }}
                     </x-responsive-nav-link>
                 @endif
-                <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                    {{ __('Publicado') }}
+                <x-responsive-nav-link :href="route('events.my-events')" :active="request()->routeIs('events.my-events')">
+                    {{ __('Mis Eventos') }}
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('tickets.index')" :active="request()->routeIs('tickets.*')">
                     {{ __('Mis Entradas') }}
@@ -154,6 +178,10 @@
             </div>
 
             <div class="mt-3 space-y-1">
+                <x-responsive-nav-link :href="route('dashboard')" class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
+                    <i class="fas fa-tachometer-alt mr-2"></i>
+                    {{ __('Dashboard') }}
+                </x-responsive-nav-link>
                 @if(Auth::user()->isAdmin())
                     <x-responsive-nav-link :href="route('admin.dashboard')" class="text-red-600">
                         <i class="fas fa-crown mr-2"></i>
@@ -161,11 +189,18 @@
                     </x-responsive-nav-link>
                 @endif
                 <x-responsive-nav-link :href="route('profile.edit')">
+                    <i class="fas fa-user-cog mr-2"></i>
                     {{ __('Perfil') }}
                 </x-responsive-nav-link>
 
                 <x-responsive-nav-link :href="route('tickets.index')">
+                    <i class="fas fa-ticket-alt mr-2"></i>
                     {{ __('Mis Entradas') }}
+                </x-responsive-nav-link>
+
+                <x-responsive-nav-link :href="route('events.my-events')">
+                    <i class="fas fa-calendar-alt mr-2"></i>
+                    {{ __('Mis Eventos') }}
                 </x-responsive-nav-link>
 
                 <!-- Authentication -->
@@ -175,6 +210,7 @@
                     <x-responsive-nav-link :href="route('logout')"
                             onclick="event.preventDefault();
                                         this.closest('form').submit();">
+                        <i class="fas fa-sign-out-alt mr-2"></i>
                         {{ __('Cerrar Sesión') }}
                     </x-responsive-nav-link>
                 </form>

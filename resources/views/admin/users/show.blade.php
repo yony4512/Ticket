@@ -4,8 +4,6 @@
 
 @extends('layouts.admin')
 
-@section('title', 'Detalles de Usuario')
-@section('subtitle', '<p class="text-sm text-gray-600">Información completa del usuario</p>')
 
 @section('content')
 <div class="space-y-6">
@@ -35,6 +33,9 @@
                                     Administrador
                                 </span>
                             @endif
+                            <button type="button" onclick="openMessageModal({{ $user->id }})" class="ml-2 px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">
+                                <i class="fas fa-envelope"></i> Mensaje
+                            </button>
                         </div>
                     </div>
 
@@ -179,7 +180,7 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
-                                            {{ Event::categories()[$event->category] }}
+                                            {{ \App\Models\Event::categories()[$event->category] }}
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
@@ -271,4 +272,5 @@
         </div>
     </div>
 </div>
+@include('components.message-modal')
 @endsection 

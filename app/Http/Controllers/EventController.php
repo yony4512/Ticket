@@ -80,6 +80,12 @@ class EventController extends Controller
                       ->with('user')
                       ->latest()
                       ->paginate(12);
+        
+        // Si es administrador y no tiene eventos, mostrar mensaje especial
+        if (Auth::user()->hasRole('admin') && $events->isEmpty()) {
+            return view('events.my-events', compact('events'))->with('info', 'Como administrador, no puedes crear eventos. Solo puedes gestionar eventos de otros usuarios desde el panel de administración.');
+        }
+        
         return view('events.my-events', compact('events'));
     }
 
@@ -88,6 +94,12 @@ class EventController extends Controller
      */
     public function create()
     {
+        // Los administradores no pueden crear eventos
+        if (Auth::user()->hasRole('admin')) {
+            return redirect()->route('events.index')
+                ->with('error', 'Los administradores no pueden crear eventos. Solo pueden gestionar eventos existentes.');
+        }
+        
         $categories = Event::categories();
         return view('events.create', compact('categories'));
     }
@@ -97,9 +109,15 @@ class EventController extends Controller
      */
     public function store(Request $request)
     {
+        // Los administradores no pueden crear eventos
+        if (Auth::user()->hasRole('admin')) {
+            return redirect()->route('events.index')
+                ->with('error', 'Los administradores no pueden crear eventos. Solo pueden gestionar eventos existentes.');
+        }
+        
         $validated = $request->validate([
             'title' => 'required|max:255',
-            'category' => 'required|in:' . implode(',', array_keys(Event::categories())),
+            'category' => 'required|string|max:255',
             'description' => 'required',
             'location' => 'required',
             'event_date' => 'required|date|after:now',
@@ -117,6 +135,20 @@ class EventController extends Controller
         $validated['status'] = 'active';
         
         $event = Event::create($validated);
+
+        // Crear notificación para el usuario que creó el evento
+        $user = Auth::user();
+        $user->createNotification(
+            'event_created',
+            'Evento creado exitosamente',
+            "Has creado el evento '{$event->title}' exitosamente. Ya está disponible para la venta de tickets.",
+            [
+                'event_id' => $event->id,
+                'event_title' => $event->title,
+                'event_date' => $event->event_date,
+                'location' => $event->location
+            ]
+        );
 
         return redirect()->route('events.show', $event)
             ->with('success', '¡Evento creado exitosamente!');
@@ -147,6 +179,13 @@ class EventController extends Controller
     public function edit(Event $event)
     {
         $this->authorize('update', $event);
+        
+        // Verificar si el evento ya fue editado una vez
+        if (!$event->canBeEdited()) {
+            return redirect()->route('events.show', $event)
+                ->with('error', 'Este evento ya ha sido editado una vez y no puede ser modificado nuevamente.');
+        }
+        
         $categories = Event::categories();
         return view('events.edit', compact('event', 'categories'));
     }
@@ -158,9 +197,15 @@ class EventController extends Controller
     {
         $this->authorize('update', $event);
 
+        // Verificar si el evento ya fue editado una vez
+        if (!$event->canBeEdited()) {
+            return redirect()->route('events.show', $event)
+                ->with('error', 'Este evento ya ha sido editado una vez y no puede ser modificado nuevamente.');
+        }
+
         $validated = $request->validate([
             'title' => 'required|max:255',
-            'category' => 'required|in:' . implode(',', array_keys(Event::categories())),
+            'category' => 'required|string|max:255',
             'description' => 'required',
             'location' => 'required',
             'event_date' => 'required|date',
@@ -178,9 +223,12 @@ class EventController extends Controller
         }
 
         $event->update($validated);
+        
+        // Marcar el evento como editado
+        $event->markAsEdited();
 
         return redirect()->route('events.show', $event)
-            ->with('success', '¡Evento actualizado exitosamente!');
+            ->with('success', '¡Evento actualizado exitosamente! Esta es la única vez que puedes editar este evento.');
     }
 
     /**

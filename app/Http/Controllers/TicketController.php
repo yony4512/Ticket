@@ -15,6 +15,27 @@ class TicketController extends Controller
         $this->middleware('auth');
     }
 
+    public function checkoutForm(Request $request, Event $event)
+    {
+        $request->validate([
+            'quantity' => 'required|integer|min:1|max:10',
+        ]);
+
+        $quantity = $request->quantity;
+
+        // Verificar disponibilidad
+        if (!$event->canPurchase($quantity)) {
+            return back()->withErrors(['quantity' => 'No hay suficientes entradas disponibles.']);
+        }
+
+        // Verificar que el evento no haya pasado
+        if ($event->event_date->isPast()) {
+            return back()->withErrors(['event' => 'Este evento ya ha pasado.']);
+        }
+
+        return view('tickets.checkout', compact('event', 'quantity'));
+    }
+
     public function checkout(Request $request, Event $event)
     {
         $request->validate([
@@ -88,6 +109,23 @@ class TicketController extends Controller
                 'purchased_at' => now(),
                 'notes' => $request->notes
             ]);
+
+            // Crear notificación para el usuario
+            $user = Auth::user();
+            $status = $request->payment_method === 'transfer' ? 'pendiente' : 'confirmado';
+            $user->createNotification(
+                'ticket_purchased',
+                'Ticket comprado exitosamente',
+                "Has comprado {$quantity} entrada(s) para '{$event->title}'. Estado: {$status}",
+                [
+                    'ticket_id' => $ticket->id,
+                    'event_id' => $event->id,
+                    'event_title' => $event->title,
+                    'quantity' => $quantity,
+                    'total_price' => $total,
+                    'status' => $ticket->status
+                ]
+            );
 
             DB::commit();
 

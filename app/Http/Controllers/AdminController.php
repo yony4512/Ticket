@@ -10,6 +10,7 @@ use App\Models\Message;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class AdminController extends Controller
 {
@@ -123,22 +124,30 @@ class AdminController extends Controller
             ->with('success', 'Usuario actualizado exitosamente');
     }
 
-    public function sendMessageToUser(Request $request, User $user)
+    public function sendMessageToUser(Request $request)
     {
         $request->validate([
+            'user_id' => 'required|exists:users,id',
             'subject' => 'required|string|max:255',
             'message' => 'required|string|max:1000'
         ]);
 
-        Message::create([
+        $user = User::findOrFail($request->user_id);
+
+        $newMessage = Message::create([
             'from_user_id' => Auth::id(),
             'to_user_id' => $user->id,
             'subject' => $request->subject,
             'message' => $request->message
         ]);
 
-        return redirect()->route('admin.users.show', $user)
-            ->with('success', 'Mensaje enviado exitosamente al usuario.');
+        // Cargar la relación fromUser para la notificación
+        $newMessage->load('fromUser');
+
+        // Crear notificación para el usuario destinatario
+        $user->notifyNewMessage($newMessage);
+
+        return redirect()->back()->with('success', 'Mensaje enviado exitosamente al usuario.');
     }
 
     public function events(Request $request)
@@ -406,13 +415,22 @@ class AdminController extends Controller
         ]);
 
         // Crear respuesta
-        Message::create([
+        $replyMessage = Message::create([
             'from_user_id' => auth()->id(),
             'to_user_id' => $message->from_user_id,
             'subject' => $validated['subject'],
             'message' => $validated['message'],
             'read_at' => null
         ]);
+
+        // Cargar la relación fromUser para la notificación
+        $replyMessage->load('fromUser');
+
+        // Crear notificación para el usuario que recibió la respuesta
+        $recipient = User::find($message->from_user_id);
+        if ($recipient) {
+            $recipient->notifyMessageReply($replyMessage);
+        }
 
         return redirect()->route('admin.messages.index')->with('success', 'Respuesta enviada correctamente');
     }
@@ -453,31 +471,6 @@ class AdminController extends Controller
         return redirect()->route('admin.users.index')->with('success', 'Usuario eliminado exitosamente');
     }
 
-    public function eventCreate()
-    {
-        $categories = Event::categories();
-        return view('admin.events.create', compact('categories'));
-    }
-
-    public function eventStore(Request $request)
-    {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'category' => 'required|in:' . implode(',', array_keys(Event::categories())),
-            'description' => 'required|string',
-            'location' => 'required|string',
-            'event_date' => 'required|date|after:today',
-            'price' => 'required|numeric|min:0',
-            'capacity' => 'required|integer|min:1',
-            'status' => 'required|in:active,inactive'
-        ]);
-
-        $validated['user_id'] = Auth::id();
-        Event::create($validated);
-
-        return redirect()->route('admin.events.index')->with('success', 'Evento creado exitosamente');
-    }
-
     public function eventDestroy(Event $event)
     {
         $event->delete();
@@ -515,5 +508,253 @@ class AdminController extends Controller
         // Por ejemplo, guardar en la base de datos o en archivos de configuración
         
         return redirect()->route('admin.settings')->with('success', 'Configuración de email actualizada exitosamente');
+    }
+
+    public function downloadReport($type)
+    {
+        switch ($type) {
+            case 'general':
+                return $this->generateGeneralReport();
+            case 'events':
+                return $this->generateEventsReport();
+            case 'top_events':
+                return $this->generateTopEventsReport();
+            default:
+                abort(404);
+        }
+    }
+
+    private function generateGeneralReport()
+    {
+        // Estadísticas generales
+        $userStats = [
+            'total' => User::count(),
+            'this_month' => User::where('created_at', '>=', now()->startOfMonth())->count(),
+        ];
+
+        $eventStats = [
+            'total' => Event::count(),
+            'active' => Event::where('event_date', '>', now())->count(),
+            'by_category' => Event::select('category', DB::raw('count(*) as total'))
+                ->groupBy('category')
+                ->get()
+        ];
+
+        $ticketStats = [
+            'total' => Ticket::count(),
+            'pending' => Ticket::where('status', 'pending')->count(),
+            'confirmed' => Ticket::where('status', 'confirmed')->count(),
+            'used' => Ticket::where('status', 'used')->count(),
+            'cancelled' => Ticket::where('status', 'cancelled')->count(),
+            'total_revenue' => Ticket::whereIn('status', ['confirmed', 'used'])->sum('total_price'),
+            'monthly_revenue' => Ticket::whereIn('status', ['confirmed', 'used'])
+                ->where('created_at', '>=', now()->startOfMonth())
+                ->sum('total_price')
+        ];
+
+        $pdf = PDF::loadView('admin.reports.pdf.general', compact('userStats', 'eventStats', 'ticketStats'));
+        return $pdf->download('reporte-general-' . now()->format('Y-m-d') . '.pdf');
+    }
+
+    private function generateEventsReport()
+    {
+        $events = Event::with(['user', 'tickets'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $pdf = PDF::loadView('admin.reports.pdf.events', compact('events'));
+        return $pdf->download('reporte-eventos-' . now()->format('Y-m-d') . '.pdf');
+    }
+
+    private function generateTopEventsReport()
+    {
+        $topEvents = Event::with('user')
+            ->withCount(['tickets as total_tickets' => function($query) {
+                $query->whereIn('status', ['pending', 'confirmed', 'used']);
+            }])
+            ->withSum(['tickets as total_revenue' => function($query) {
+                $query->whereIn('status', ['confirmed', 'used']);
+            }], 'total_price')
+            ->orderByDesc('total_revenue')
+            ->take(10)
+            ->get();
+
+        $pdf = PDF::loadView('admin.reports.pdf.top_events', compact('topEvents'));
+        return $pdf->download('top-eventos-' . now()->format('Y-m-d') . '.pdf');
+    }
+
+    // --- FUNCIONES DE RESPALDO DEL SISTEMA ---
+    public function backupCreate()
+    {
+        // Aquí deberías implementar la lógica real de respaldo (ejecutar un comando Artisan, etc)
+        // Por ahora solo simula éxito
+        return redirect()->route('admin.settings')->with('success', 'Respaldo creado exitosamente.');
+    }
+
+    public function backupRestore(Request $request)
+    {
+        // Aquí deberías implementar la lógica real de restauración (subir archivo, restaurar, etc)
+        // Por ahora solo simula éxito
+        return redirect()->route('admin.settings')->with('success', 'Respaldo restaurado exitosamente.');
+    }
+
+    public function backupHistory()
+    {
+        // Aquí deberías mostrar el historial real de respaldos
+        // Por ahora solo muestra una vista simple
+        return view('admin.backup-history');
+    }
+
+    // --- ESTADÍSTICAS DEL ADMINISTRADOR ---
+    public function statistics()
+    {
+        // Estadísticas generales del sistema
+        $totalUsers = User::count();
+        $totalEvents = Event::count();
+        $totalTickets = Ticket::count();
+        $totalRevenue = Ticket::whereIn('status', ['confirmed', 'used'])->sum('total_price');
+        
+        // Estadísticas por mes
+        $currentMonth = now()->month;
+        $currentYear = now()->year;
+        
+        $usersThisMonth = User::whereMonth('created_at', $currentMonth)
+            ->whereYear('created_at', $currentYear)
+            ->count();
+        
+        $eventsThisMonth = Event::whereMonth('created_at', $currentMonth)
+            ->whereYear('created_at', $currentYear)
+            ->count();
+        
+        $ticketsThisMonth = Ticket::whereMonth('created_at', $currentMonth)
+            ->whereYear('created_at', $currentYear)
+            ->count();
+        
+        $revenueThisMonth = Ticket::whereIn('status', ['confirmed', 'used'])
+            ->whereMonth('created_at', $currentMonth)
+            ->whereYear('created_at', $currentYear)
+            ->sum('total_price');
+        
+        // Estadísticas de eventos por categoría
+        $eventsByCategory = Event::select('category', DB::raw('count(*) as total'))
+            ->groupBy('category')
+            ->get();
+        
+        // Estadísticas de tickets por estado
+        $ticketsByStatus = Ticket::select('status', DB::raw('count(*) as total'))
+            ->groupBy('status')
+            ->get();
+        
+        // Top 5 eventos más populares
+        $topEvents = Event::withCount(['tickets as total_tickets' => function($query) {
+                $query->whereIn('status', ['pending', 'confirmed', 'used']);
+            }])
+            ->withSum(['tickets as total_revenue' => function($query) {
+                $query->whereIn('status', ['confirmed', 'used']);
+            }], 'total_price')
+            ->orderByDesc('total_tickets')
+            ->take(5)
+            ->get();
+        
+        // Gráfico de ventas mensuales (últimos 6 meses)
+        $monthlySales = [];
+        for ($i = 5; $i >= 0; $i--) {
+            $date = now()->subMonths($i);
+            $sales = Ticket::whereIn('status', ['confirmed', 'used'])
+                ->whereMonth('created_at', $date->month)
+                ->whereYear('created_at', $date->year)
+                ->sum('total_price');
+            
+            $monthlySales[] = [
+                'month' => $date->format('M Y'),
+                'sales' => $sales
+            ];
+        }
+        
+        // Usuarios más activos
+        $topUsers = User::withCount(['events as total_events', 'tickets as total_tickets'])
+            ->orderByDesc('total_events')
+            ->take(5)
+            ->get();
+        
+        return view('admin.statistics', compact(
+            'totalUsers', 'totalEvents', 'totalTickets', 'totalRevenue',
+            'usersThisMonth', 'eventsThisMonth', 'ticketsThisMonth', 'revenueThisMonth',
+            'eventsByCategory', 'ticketsByStatus', 'topEvents', 'monthlySales', 'topUsers'
+        ));
+    }
+
+    public function downloadStatistics()
+    {
+        // Obtener las mismas estadísticas que en la vista
+        $totalUsers = User::count();
+        $totalEvents = Event::count();
+        $totalTickets = Ticket::count();
+        $totalRevenue = Ticket::whereIn('status', ['confirmed', 'used'])->sum('total_price');
+        
+        $currentMonth = now()->month;
+        $currentYear = now()->year;
+        
+        $usersThisMonth = User::whereMonth('created_at', $currentMonth)
+            ->whereYear('created_at', $currentYear)
+            ->count();
+        
+        $eventsThisMonth = Event::whereMonth('created_at', $currentMonth)
+            ->whereYear('created_at', $currentYear)
+            ->count();
+        
+        $ticketsThisMonth = Ticket::whereMonth('created_at', $currentMonth)
+            ->whereYear('created_at', $currentYear)
+            ->count();
+        
+        $revenueThisMonth = Ticket::whereIn('status', ['confirmed', 'used'])
+            ->whereMonth('created_at', $currentMonth)
+            ->whereYear('created_at', $currentYear)
+            ->sum('total_price');
+        
+        $eventsByCategory = Event::select('category', DB::raw('count(*) as total'))
+            ->groupBy('category')
+            ->get();
+        
+        $ticketsByStatus = Ticket::select('status', DB::raw('count(*) as total'))
+            ->groupBy('status')
+            ->get();
+        
+        $topEvents = Event::withCount(['tickets as total_tickets' => function($query) {
+                $query->whereIn('status', ['pending', 'confirmed', 'used']);
+            }])
+            ->withSum(['tickets as total_revenue' => function($query) {
+                $query->whereIn('status', ['confirmed', 'used']);
+            }], 'total_price')
+            ->orderByDesc('total_tickets')
+            ->take(5)
+            ->get();
+        
+        $monthlySales = [];
+        for ($i = 5; $i >= 0; $i--) {
+            $date = now()->subMonths($i);
+            $sales = Ticket::whereIn('status', ['confirmed', 'used'])
+                ->whereMonth('created_at', $date->month)
+                ->whereYear('created_at', $date->year)
+                ->sum('total_price');
+            
+            $monthlySales[] = [
+                'month' => $date->format('M Y'),
+                'sales' => $sales
+            ];
+        }
+        
+        $topUsers = User::withCount(['events as total_events', 'tickets as total_tickets'])
+            ->orderByDesc('total_events')
+            ->take(5)
+            ->get();
+        
+        $pdf = PDF::loadView('admin.statistics-pdf', compact(
+            'totalUsers', 'totalEvents', 'totalTickets', 'totalRevenue',
+            'usersThisMonth', 'eventsThisMonth', 'ticketsThisMonth', 'revenueThisMonth',
+            'eventsByCategory', 'ticketsByStatus', 'topEvents', 'monthlySales', 'topUsers'
+        ));
+        
+        return $pdf->download('estadisticas-sistema-' . now()->format('Y-m-d') . '.pdf');
     }
 } 

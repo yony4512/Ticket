@@ -43,8 +43,8 @@
                     </label>
                     <input type="text" name="site_name" id="site_name" 
                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                           placeholder="Sistema de Eventos"
-                           value="{{ old('site_name', 'Sistema de Eventos') }}">
+                           placeholder="Wasi Tickets"
+                           value="{{ old('site_name', 'Wasi Tickets') }}">
                 </div>
 
                 <div>
@@ -54,7 +54,7 @@
                     </label>
                     <textarea name="site_description" id="site_description" rows="3"
                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                              placeholder="Descripción del sistema...">{{ old('site_description', 'Sistema de gestión de eventos y tickets') }}</textarea>
+                              placeholder="Descripción del sistema...">{{ old('site_description', 'Plataforma de venta de tickets para eventos') }}</textarea>
                 </div>
 
                 <div>
@@ -260,27 +260,34 @@
                 <i class="fas fa-download text-blue-600 text-2xl mb-2"></i>
                 <h3 class="font-medium text-gray-900">Crear Respaldo</h3>
                 <p class="text-sm text-gray-600 mb-3">Generar un nuevo respaldo completo</p>
-                <button class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg hover:shadow-lg transition-all duration-300">
-                    Crear Ahora
-                </button>
+                <form method="POST" action="{{ route('admin.backup.create') }}">
+                    @csrf
+                    <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg hover:shadow-lg transition-all duration-300">
+                        Crear Ahora
+                    </button>
+                </form>
             </div>
 
             <div class="text-center p-4 bg-gray-50 rounded-lg">
                 <i class="fas fa-upload text-green-600 text-2xl mb-2"></i>
                 <h3 class="font-medium text-gray-900">Restaurar</h3>
                 <p class="text-sm text-gray-600 mb-3">Restaurar desde un respaldo</p>
-                <button class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg hover:shadow-lg transition-all duration-300">
-                    Restaurar
-                </button>
+                <form method="POST" action="{{ route('admin.backup.restore') }}" enctype="multipart/form-data">
+                    @csrf
+                    <input type="file" name="backup_file" class="mb-2 block w-full text-sm text-gray-600" required>
+                    <button type="submit" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg hover:shadow-lg transition-all duration-300">
+                        Restaurar
+                    </button>
+                </form>
             </div>
 
             <div class="text-center p-4 bg-gray-50 rounded-lg">
                 <i class="fas fa-history text-purple-600 text-2xl mb-2"></i>
                 <h3 class="font-medium text-gray-900">Historial</h3>
                 <p class="text-sm text-gray-600 mb-3">Ver respaldos anteriores</p>
-                <button class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg hover:shadow-lg transition-all duration-300">
+                <a href="{{ route('admin.backup.history') }}" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg hover:shadow-lg transition-all duration-300 inline-block">
                     Ver Historial
-                </button>
+                </a>
             </div>
         </div>
     </div>

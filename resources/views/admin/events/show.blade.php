@@ -1,7 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Detalle del Evento')
-@section('subtitle', '<p class="text-sm text-gray-600">Información completa del evento</p>')
+
 
 @section('content')
 <div class="space-y-6">

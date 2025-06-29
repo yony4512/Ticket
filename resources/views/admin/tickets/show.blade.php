@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
 @section('title', 'Detalle del Ticket')
-@section('subtitle', '<p class="text-sm text-gray-600">Información completa del ticket</p>')
+
 
 @section('content')
 <div class="space-y-6">

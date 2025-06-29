@@ -1,8 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Eventos') }}
-        </h2>
+        {{-- Título eliminado --}}
     </x-slot>
 
     <div class="py-8">
@@ -79,11 +77,13 @@
                         </span>
                     </div>
                     @auth
-                        <a href="{{ route('events.create') }}" 
-                           class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300">
-                            <i class="fas fa-plus mr-2"></i>
-                            Crear Evento
-                        </a>
+                        @if(!Auth::user()->hasRole('admin'))
+                            <a href="{{ route('events.create') }}" 
+                               class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300">
+                                <i class="fas fa-plus mr-2"></i>
+                                Crear Evento
+                            </a>
+                        @endif
                     @endauth
                 </div>
 
