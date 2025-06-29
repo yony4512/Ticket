@@ -74,7 +74,6 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::patch('/users/{user}', [AdminController::class, 'userUpdate'])->name('users.update');
     Route::delete('/users/{user}', [AdminController::class, 'userDestroy'])->name('users.destroy');
     Route::post('/users/{user}/send-message', [AdminController::class, 'sendMessageToUser'])->name('users.send-message');
-    Route::post('/users/send-message', [AdminController::class, 'sendMessageToUser'])->name('users.send-message');
     
     // Rutas de eventos
     Route::get('/events', [AdminController::class, 'events'])->name('events.index');
