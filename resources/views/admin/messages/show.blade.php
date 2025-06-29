@@ -2,7 +2,6 @@
 
 @section('title', 'Ver Mensaje')
 
-
 @section('content')
 <div class="space-y-6">
     <!-- Detalle del mensaje -->
