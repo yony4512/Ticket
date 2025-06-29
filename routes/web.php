@@ -94,10 +94,16 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     
     // Rutas de reportes y configuración
     Route::get('/reports', [AdminController::class, 'reports'])->name('reports');
+    Route::get('/reports/download/{type}', [AdminController::class, 'downloadReport'])->name('reports.download');
     Route::get('/settings', [AdminController::class, 'settings'])->name('settings');
     Route::put('/settings', [AdminController::class, 'settingsUpdate'])->name('settings.update');
     Route::put('/settings/email', [AdminController::class, 'settingsEmailUpdate'])->name('settings.email');
     Route::get('/statistics', [AdminController::class, 'statistics'])->name('statistics');
+    
+    // Rutas de backup
+    Route::post('/backup/create', [AdminController::class, 'backupCreate'])->name('backup.create');
+    Route::post('/backup/restore', [AdminController::class, 'backupRestore'])->name('backup.restore');
+    Route::get('/backup/history', [AdminController::class, 'backupHistory'])->name('backup.history');
 });
 
 require __DIR__.'/auth.php';
