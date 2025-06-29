@@ -581,7 +581,7 @@
                 
                 async sendReply() {
                     try {
-                        const response = await fetch('{{ route("admin.users.send-message") }}', {
+                        const response = await fetch('{{ route("admin.users.send-message-general") }}', {
                             method: 'POST',
                             headers: {
                                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),

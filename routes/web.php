@@ -69,6 +69,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::patch('/users/{user}', [AdminController::class, 'userUpdate'])->name('users.update');
     Route::delete('/users/{user}', [AdminController::class, 'userDestroy'])->name('users.destroy');
     Route::post('/users/{user}/send-message', [AdminController::class, 'sendMessageToUser'])->name('users.send-message');
+    Route::post('/users/send-message', [AdminController::class, 'sendMessageToUser'])->name('users.send-message-general');
     
     // Rutas de eventos
     Route::get('/events', [AdminController::class, 'events'])->name('events.index');
@@ -96,6 +97,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/settings', [AdminController::class, 'settings'])->name('settings');
     Route::put('/settings', [AdminController::class, 'settingsUpdate'])->name('settings.update');
     Route::put('/settings/email', [AdminController::class, 'settingsEmailUpdate'])->name('settings.email');
+    Route::get('/statistics', [AdminController::class, 'statistics'])->name('statistics');
 });
 
 require __DIR__.'/auth.php';

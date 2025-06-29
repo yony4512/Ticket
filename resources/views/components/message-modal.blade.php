@@ -7,7 +7,7 @@
                     <i class="fas fa-times"></i>
                 </button>
             </div>
-            <form id="messageForm" method="POST" action="{{ route('admin.users.send-message') }}" style="padding:24px;">
+            <form id="messageForm" method="POST" action="{{ route('admin.users.send-message-general') }}" style="padding:24px;">
                 @csrf
                 <input type="hidden" name="user_id" id="messageUserId">
                 <div style="margin-bottom:16px;">
