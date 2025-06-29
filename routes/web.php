@@ -47,9 +47,8 @@ Route::middleware('auth')->group(function () {
     
     // Rutas de notificaciones
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
-    Route::get('/notifications/data', [NotificationController::class, 'getData'])->name('notifications.data');
-    Route::post('/notifications/{notification}/mark-as-read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
-    Route::post('/notifications/mark-all-as-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.read-all');
+    Route::patch('/notifications/{notification}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
+    Route::patch('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.read-all');
     Route::get('/notifications/unread-count', [NotificationController::class, 'getUnreadCount'])->name('notifications.unread-count');
     Route::get('/notifications/recent', [NotificationController::class, 'getRecentNotifications'])->name('notifications.recent');
     Route::delete('/notifications/{notification}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
@@ -63,10 +62,6 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
     
-    // Rutas de estadísticas del administrador
-    Route::get('/statistics', [AdminController::class, 'statistics'])->name('statistics');
-    Route::get('/statistics/download', [AdminController::class, 'downloadStatistics'])->name('statistics.download');
-    
     // Rutas de usuarios
     Route::get('/users', [AdminController::class, 'users'])->name('users.index');
     Route::get('/users/{user}', [AdminController::class, 'userShow'])->name('users.show');
@@ -77,6 +72,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     
     // Rutas de eventos
     Route::get('/events', [AdminController::class, 'events'])->name('events.index');
+    Route::get('/events/create', [AdminController::class, 'eventCreate'])->name('events.create');
+    Route::post('/events', [AdminController::class, 'eventStore'])->name('events.store');
     Route::get('/events/{event}', [AdminController::class, 'eventShow'])->name('events.show');
     Route::get('/events/{event}/edit', [AdminController::class, 'eventEdit'])->name('events.edit');
     Route::put('/events/{event}', [AdminController::class, 'eventUpdate'])->name('events.update');
@@ -96,15 +93,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     
     // Rutas de reportes y configuración
     Route::get('/reports', [AdminController::class, 'reports'])->name('reports');
-    Route::get('/reports/download/{type}', [AdminController::class, 'downloadReport'])->name('reports.download');
     Route::get('/settings', [AdminController::class, 'settings'])->name('settings');
     Route::put('/settings', [AdminController::class, 'settingsUpdate'])->name('settings.update');
     Route::put('/settings/email', [AdminController::class, 'settingsEmailUpdate'])->name('settings.email');
-    
-    // Rutas de respaldo del sistema
-    Route::post('/backup/create', [AdminController::class, 'backupCreate'])->name('backup.create');
-    Route::post('/backup/restore', [AdminController::class, 'backupRestore'])->name('backup.restore');
-    Route::get('/backup/history', [AdminController::class, 'backupHistory'])->name('backup.history');
 });
 
 require __DIR__.'/auth.php';
