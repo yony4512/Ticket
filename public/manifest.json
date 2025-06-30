@@ -1,0 +1,21 @@
+{
+    "name": "Wasi Tickets",
+    "short_name": "WasiTickets",
+    "description": "Sistema de venta de tickets para eventos",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#3b82f6",
+    "icons": [
+        {
+            "src": "/imagenes/iconoboleto.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "/imagenes/iconoboleto.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+} 
