@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'Wasi Tickets'),
+    'name' => env('APP_NAME', 'Casa Entradas'),
 
     /*
     |--------------------------------------------------------------------------

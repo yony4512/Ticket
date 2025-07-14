@@ -12,7 +12,7 @@
                 <div class="w-20 h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
                     <i class="fas fa-info-circle text-white text-3xl"></i>
                 </div>
-                <h1 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">Sobre EventSystem</h1>
+                <h1 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">Sobre Wasi Tickets</h1>
                 <p class="text-xl text-gray-600 max-w-3xl mx-auto">
                     La plataforma líder en gestión de eventos que conecta organizadores con audiencias apasionadas
                 </p>
@@ -22,7 +22,7 @@
             <div class="glass-effect rounded-xl p-8 shadow-lg border border-gray-200 mb-8">
                 <div class="prose max-w-none">
                     <p class="text-lg text-gray-700 mb-6 leading-relaxed">
-                        EventSystem es la plataforma líder en gestión de eventos que conecta a organizadores con su 
+                        Wasi Tickets es la plataforma líder en gestión de eventos que conecta a organizadores con su 
                         público objetivo de manera eficiente y efectiva. Nuestra misión es facilitar la creación, 
                         promoción y gestión de eventos de todo tipo, desde pequeños encuentros hasta grandes 
                         conferencias y conciertos.

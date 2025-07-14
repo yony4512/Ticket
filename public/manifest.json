@@ -1,7 +1,7 @@
 {
-    "name": "Wasi Tickets",
-    "short_name": "WasiTickets",
-    "description": "Sistema de venta de tickets para eventos",
+    "name": "Casa Entradas",
+    "short_name": "CasaEntradas",
+    "description": "Sistema de venta de entradas para eventos",
     "start_url": "/",
     "display": "standalone",
     "background_color": "#ffffff",

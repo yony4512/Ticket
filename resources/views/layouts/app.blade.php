@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Wasi Tickets') }}</title>
+        <title>{{ config('app.name', 'Casa Entradas') }}</title>
 
         <!-- Favicon -->
         <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
@@ -16,7 +16,7 @@
         <meta name="theme-color" content="#3b82f6">
         <meta name="apple-mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-status-bar-style" content="default">
-        <meta name="apple-mobile-web-app-title" content="Wasi Tickets">
+        <meta name="apple-mobile-web-app-title" content="Casa Entradas">
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
@@ -42,7 +42,7 @@
                         <div class="flex items-center">
                             <div class="flex items-center">
                                 <img src="{{ asset('imagenes/iconoboleto.png') }}" alt="Logo" class="h-8 w-auto mr-3">
-                                <span class="text-2xl font-extrabold" style="font-family: 'Montserrat', cursive; background: linear-gradient(90deg, #7c3aed 0%, #2563eb 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 2px;">Wasi Tickets</span>
+                                <span class="text-2xl font-extrabold" style="font-family: 'Montserrat', cursive; background: linear-gradient(90deg, #7c3aed 0%, #2563eb 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 2px;">Casa Entradas</span>
                             </div>
                         </div>
 
@@ -244,7 +244,7 @@
                 <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
                     <div class="text-center">
                         <p class="text-center text-gray-600 text-sm">
-                            © {{ date('Y') }} Wasi Tickets. Todos los derechos reservados.
+                            © {{ date('Y') }} Casa Entradas. Todos los derechos reservados.
                         </p>
                     </div>
                 </div>
