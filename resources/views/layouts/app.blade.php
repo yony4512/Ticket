@@ -42,7 +42,7 @@
                         <div class="flex items-center">
                             <div class="flex items-center">
                                 <img src="{{ asset('imagenes/iconoboleto.png') }}" alt="Logo" class="h-8 w-auto mr-3">
-                                <span class="text-2xl font-extrabold" style="font-family: 'Montserrat', cursive; background: linear-gradient(90deg, #7c3aed 0%, #2563eb 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 2px;">Wasi Tickets</span>
+                                <span class="text-2xl font-extrabold text-red-600" style="font-family: 'Montserrat', cursive; letter-spacing: 2px;">Wasi Tickets</span>
                             </div>
                         </div>
 
